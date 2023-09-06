@@ -6,6 +6,14 @@ module Lib
 where
 
 import Control.Concurrent
+  ( Chan,
+    dupChan,
+    forkIO,
+    killThread,
+    newChan,
+    readChan,
+    writeChan,
+  )
 import Control.Exception (handle)
 import Control.Exception.Base (SomeException (..))
 import Control.Monad (when)
@@ -13,6 +21,21 @@ import Control.Monad.Fix (fix)
 import GHC.IO.Handle (BufferMode (NoBuffering), hClose)
 import GHC.IO.IOMode (IOMode (ReadWriteMode))
 import Network.Socket
+  ( AddrInfo (addrAddress),
+    Family (AF_INET),
+    SockAddr,
+    Socket,
+    SocketOption (ReuseAddr),
+    SocketType (Stream),
+    accept,
+    bind,
+    defaultHints,
+    getAddrInfo,
+    listen,
+    setSocketOption,
+    socket,
+    socketToHandle,
+  )
 import System.IO (hGetLine, hPutStrLn, hSetBuffering)
 
 someFunc :: IO ()
@@ -64,7 +87,7 @@ runConn (sock, _) chan msgNum = do
     (nextNum, line) <- readChan duppedChan
     when (msgNum /= nextNum) $ hPutStrLn handler line
     loop
-  print $ "read threadId:" ++ show reader  
+  print $ "read threadId:" ++ show reader
 
   -- read lines form the socket and echo them back to the user
   -- write to broadcast
